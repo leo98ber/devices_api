@@ -14,11 +14,9 @@ from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, Ou
 # Permissions
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
-
 #Serializers
 from users import models
 from users import serializers
-from users.models import User
 
 # Utils
 from utils.viewsets import BaseViewSet
