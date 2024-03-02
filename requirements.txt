@@ -1,0 +1,28 @@
+# Django
+Django==3.2.8
+
+# Django Rest Framework
+djangorestframework==3.12.4
+django-filter==2.4.0
+django-cors-headers==3.7.0
+djangorestframework-simplejwt==5.2.2
+django-role-permissions~=3.1.1
+
+# PostgresSQL
+psycopg2==2.9.1
+
+#Swagger
+drf-yasg==1.20.0
+
+# ldap
+ldap3==2.9
+
+# Celery
+redis==3.5.3
+celery==5.1
+django-redis==4.12.1
+tornado==6.1.0
+flower==1.0.0
+
+# Pillow
+Pillow==8.1.0
