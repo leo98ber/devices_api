@@ -1,0 +1,60 @@
+version: '3'
+
+volumes:
+  device_management_api_local_postgres_data: {}
+  device_management_api_local_postgres_data_backups: {}
+
+
+services:
+  django:
+    build: .
+    command: bash /start
+    volumes:
+      - .:/code
+    env_file:
+      - ./dev.env
+    ports:
+      - "8000:8000"
+
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+
+#  celery-worker:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    volumes:
+#      - .:/usr/src/app
+#    command: celery -A ClaimApi worker --loglevel=info
+#    env_file:
+#      - ./dev.env
+#    depends_on:
+#      - redis
+#      - django
+#
+#  celery-beat:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    volumes:
+#      - .:/usr/src/app
+#    command: celery -A ClaimApi beat --loglevel=info
+#    env_file:
+#      - ./dev.env
+#    depends_on:
+#      - redis
+#      - django
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./postgres/Dockerfile
+    image: device_management_api_production_postgres
+    container_name: device_management_api_local_postgres
+    volumes:
+      - device_management_api_local_postgres_data:/var/lib/postgresql/data
+      - device_management_api_local_postgres_data_backups:/backups
+    env_file:
+      - ./postgres/.postgres
