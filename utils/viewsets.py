@@ -135,13 +135,25 @@ class RetrieveViewSet(mixins.ListModelMixin, BaseAPIMixin):
         response_data['edit_enable'] = edit_enable
         return Response(response_data)
 
+class DestroyViewSet(mixins.DestroyModelMixin, BaseAPIMixin):
 
+    def perform_destroy(self, instance):
+        instance.delete()
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        print(f"/{request.resolver_match.route.split('(?P')[0]}*")
+        cache.delete_pattern(f"/{request.resolver_match.route.split('(?P')[0]}*")
+        logger.info('Cache was cleaned successfully')
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class BaseViewSet(viewsets.ModelViewSet,
                     CreateViewSet,
                     UpdateViewSet,
                     ListViewSet,
-                    RetrieveViewSet):
+                    RetrieveViewSet,
+                    DestroyViewSet):
 
     pass
 
