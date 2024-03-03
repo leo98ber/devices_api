@@ -1,10 +1,12 @@
+import logging
+
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_mongoengine.viewsets import GenericViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import action
 
-from settings import logger
+logger = logging.getLogger(__name__)
 from stats.models import Latency
 from stats.models.history import History
 from stats.pipelines import HISTORY_STATS_PIPELINE, CURRENT_STATS_PIPELINE
