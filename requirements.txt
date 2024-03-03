@@ -23,6 +23,9 @@ celery==5.1
 django-redis==4.12.1
 tornado==6.1.0
 flower==1.0.0
+ping3==4.0.4
 
 # Pillow
 Pillow==8.1.0
+
+mongoengine==0.25.0
