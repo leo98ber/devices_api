@@ -60,7 +60,9 @@ THIRD_PARTY_APPS = ['rest_framework', 'corsheaders', 'drf_yasg', 'django_filters
 LOCAL_APPS = [
     "users.apps.UsersConfig",
     'devices.apps.DeviceAppConfig',
-    'device_api.celery_cfg.CeleryAppConfig'
+    'device_api.celery_cfg.CeleryAppConfig',
+    'stats.apps.StatAppConfig'
+
 
 ]
 
