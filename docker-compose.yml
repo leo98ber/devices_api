@@ -3,6 +3,9 @@ version: '3'
 volumes:
   device_management_api_local_postgres_data: {}
   device_management_api_local_postgres_data_backups: {}
+  mongodb:
+  mongoconfig:
+
 
 
 services:
@@ -19,33 +22,33 @@ services:
   redis:
     image: redis:latest
     ports:
-      - 6379:6379
+      - "6379:6379"
 
-#  celery-worker:
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    volumes:
-#      - .:/usr/src/app
-#    command: celery -A ClaimApi worker --loglevel=info
-#    env_file:
-#      - ./dev.env
-#    depends_on:
-#      - redis
-#      - django
-#
-#  celery-beat:
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    volumes:
-#      - .:/usr/src/app
-#    command: celery -A ClaimApi beat --loglevel=info
-#    env_file:
-#      - ./dev.env
-#    depends_on:
-#      - redis
-#      - django
+  celery-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/usr/src/app
+    command: celery -A device_api.celery_cfg worker --loglevel=info
+    env_file:
+      - ./dev.env
+    depends_on:
+      - redis
+      - django
+
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/usr/src/app
+    command: celery -A device_api.celery_cfg beat --loglevel=info
+    env_file:
+      - ./dev.env
+    depends_on:
+      - redis
+      - django
 
   postgres:
     build:
@@ -58,3 +61,15 @@ services:
       - device_management_api_local_postgres_data_backups:/backups
     env_file:
       - ./postgres/.postgres
+
+  mongodb:
+    image: mongo
+    ports:
+      - "37017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: your_username
+      MONGO_INITDB_ROOT_PASSWORD: your_password
+
+networks:
+  mongo_net:
+    driver: bridge
