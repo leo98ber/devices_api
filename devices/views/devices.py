@@ -1,12 +1,16 @@
 # Permissions
+from django.core.cache import cache
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 #Serializers
 from devices import models
 from devices import serializers
+from stats.models.history import History
 
 # Utils
-from utils.viewsets import BaseViewSet
+from utils.viewsets import BaseViewSet, logger
 
 
 class DeviceViewSet(BaseViewSet):
@@ -42,10 +46,23 @@ class DeviceViewSet(BaseViewSet):
 
     filter_fields = search_fields
     def perform_destroy(self, instance):
-        # test_ip_direction = True
-        # if test_ip_direction:
-        #     instance.active = False
-        #     instance.save()
-        # else:
-        instance.delete()
+        device_exists =  True if History.objects.filter(host=instance.ip_address).count() else False
 
+        if device_exists:
+            instance.active = False
+            instance.save()
+        else:
+            instance.delete()
+
+
+    def destroy(self, request, *args, **kwargs):
+        device_id = kwargs.get('pk')
+        try:
+            instance = self.model_class.objects.get(id=device_id)
+        except self.model_class.DoesNotExist:
+            instance = self.get_object()
+
+        self.perform_destroy(instance)
+        cache.delete_pattern(f"/{request.resolver_match.route.split('(?P')[0]}*")
+        logger.info('Cache was cleaned successfully')
+        return Response(status=status.HTTP_204_NO_CONTENT)
