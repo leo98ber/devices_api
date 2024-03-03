@@ -13,6 +13,7 @@ import os
 from datetime import timedelta
 from pathlib import Path
 import logging
+import mongoengine
 
 logger = logging.getLogger(__name__)
 
@@ -59,6 +60,7 @@ THIRD_PARTY_APPS = ['rest_framework', 'corsheaders', 'drf_yasg', 'django_filters
 LOCAL_APPS = [
     "users.apps.UsersConfig",
     'devices.apps.DeviceAppConfig',
+    'device_api.celery_cfg.CeleryAppConfig'
 
 ]
 
@@ -231,7 +233,14 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
-CELERY_CONFIG_MODULE = 'ClaimApi.celery'
+CELERY_CONFIG_MODULE = 'device_api.celery_cfg'
+
+CELERY_BEAT_SCHEDULE = {
+    'run-task-every-5-seconds': {
+        'task': 'tasks.tasks.device_connection_test',  # Ruta a la tarea que deseas ejecutar
+        'schedule': 15.0,  # Intervalo de tiempo en segundos
+    },
+}
 
 SWAGGER_SETTINGS = {
     "SECURITY_DEFINITIONS": {
@@ -262,3 +271,14 @@ CACHES = {
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'default'
+
+# Load DBs config: MongoDB
+MONGODB_URL = os.environ.get('MONGODB_URL')
+MONGODB_USER = os.environ.get('MONGODB_USER')
+MONGODB_PASSW = os.environ.get('MONGODB_PASSW')
+
+if not (MONGODB_URL and MONGODB_USER and MONGODB_PASSW):
+    logger.error('MONGODB_URL, MONGODB_USER, MONGODB_PASSW must be defined in os environment')
+    exit(-1)
+
+mongoengine.connect(host=MONGODB_URL, username=MONGODB_USER, password=MONGODB_PASSW)
